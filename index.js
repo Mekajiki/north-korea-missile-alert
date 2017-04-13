@@ -1,6 +1,7 @@
 var request = require('request');
 
 var YAHOO_URL = 'https://www.yahoo.co.jp/';
+var NHK_URL = 'http://www3.nhk.or.jp/news/json16/new_001.json';
 
 var DANGEROUS_WORDS = [
   '北朝鮮',
@@ -12,7 +13,7 @@ var HEADLINE_LENGTH = 20;
 var WEBHOOK_URL = process.env['WEBHOOK_URL'];
 
 exports.handler = function(event, context, lambdaCallback) {
-  detectMissileByYahoo(function(headline, url) {
+  detectMissileByNHK(function(headline, url) {
     var payload =
     {
         text: "@here",
@@ -41,6 +42,30 @@ exports.handler = function(event, context, lambdaCallback) {
     });
 
   }, lambdaCallback);
+}
+
+function detectMissileByNHK(callback, lambdaCallback) {
+  request(NHK_URL, function(err, res, body) {
+    if (err) {
+      lambdaCallback(err);
+    }
+    if (res.statusCode != 200) {
+      lambdaCallback(res);
+    }
+
+    var json = JSON.parse(body);
+    var threeMinutesAgo = new Date(Date.now() - 3 * 60 * 1000);
+    json.channel.item.find(function (item) {
+      var update = Date.parse(item.pubDate);
+      var text = item.title;
+
+      if (threeMinutesAgo < update &&
+          detectMissile(text)) {
+        var url = 'http://www3.nhk.or.jp/news/' + item.link;
+        callback(text, url);
+      }
+    });
+  });
 }
 
 function detectMissileByYahoo(callback, lambdaCallback) {
