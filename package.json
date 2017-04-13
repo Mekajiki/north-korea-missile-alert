@@ -1,0 +1,26 @@
+{
+  "name": "north-korea-missile-alert",
+  "version": "1.0.0",
+  "description": "Scrape news sites and alert to slack if missile has launched",
+  "main": "index.js",
+  "scripts": {
+    "test": "node-lambda run"
+  },
+  "keywords": [
+    "North Korea",
+    "Missile Alert",
+    "Slack"
+  ],
+  "author": "NAKAGAWA Yuichiro",
+  "license": "WTFPL",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mekajiki/north-korea-missile-alert"
+  },
+  "dependencies": {
+    "async": "^2.3.0"
+  },
+  "devDependencies": {
+    "node-lambda": "^0.8.15"
+  }
+}
