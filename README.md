@@ -16,3 +16,5 @@ Then upload the zip file to your AWS Lambda account.
 
 ## Set up AWS CloudWatch
 Create scheduled event to invoke the Lambda function.
+
+## Set the icon of the webhook to 🚀
