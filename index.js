@@ -2,6 +2,7 @@ var request = require('request');
 
 var YAHOO_URL = 'https://www.yahoo.co.jp/';
 var NHK_URL = 'http://www3.nhk.or.jp/news/json16/new_001.json';
+var NHK_HEAD_URL = 'http://www3.nhk.or.jp/news/json16/tvnews.json';
 
 var DANGEROUS_WORDS = [
   '北朝鮮',
@@ -65,6 +66,20 @@ function detectMissileByNHK(callback, lambdaCallback) {
         callback(text, url);
       }
     });
+  });
+
+  request(NHK_HEAD_URL, function(err, res, body) {
+    if (err) {
+      lambdaCallback(err);
+    }
+    if (res.statusCode != 200) {
+      lambdaCallback(res);
+    }
+
+    var json = JSON.parse(body);
+    if (json.viewFlg && detectMissile(json.title)) {
+      callback(json.title, '');
+    }
   });
 }
 
