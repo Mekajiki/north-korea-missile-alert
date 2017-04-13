@@ -18,7 +18,8 @@
     "url": "https://github.com/Mekajiki/north-korea-missile-alert"
   },
   "dependencies": {
-    "async": "^2.3.0"
+    "async": "^2.3.0",
+    "request": "^2.81.0"
   },
   "devDependencies": {
     "node-lambda": "^0.8.15"
