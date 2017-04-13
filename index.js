@@ -11,47 +11,52 @@ var HEADLINE_LENGTH = 20;
 
 var WEBHOOK_URL = process.env['WEBHOOK_URL'];
 
-exports.handler = function(event, context, callback) {
+exports.handler = function(event, context, lambdaCallback) {
+  detectMissileByYahoo(function(headline, url) {
+    var payload =
+    {
+        text: "@here",
+        attachments: [
+          {
+            color: 'danger',
+            text: headline,
+            pretext: url
+          }
+        ]
+    };
+
+    request({
+      url: WEBHOOK_URL,
+      method: "POST",
+      json: payload
+    }, function(err, res, body) {
+      if (err) {
+        lambdaCallback(err);
+      }
+      if (res.statusCode != 200) {
+        lambdaCallback(res);
+      }
+
+      lambdaCallback(null, headline);
+    });
+
+  }, lambdaCallback);
+}
+
+function detectMissileByYahoo(callback, lambdaCallback) {
   request(YAHOO_URL, function(err, res, body) {
     if (err) {
-      callback(err);
+      lambdaCallback(err);
     }
     if (res.statusCode != 200) {
-      callback(res);
+      lambdaCallback(res);
     }
 
     if (detectMissile(body)) {
-      var headline = extractHeadline(body);
-
-      var payload =
-      {
-          text: "@here",
-          attachments: [
-            {
-              color: 'danger',
-              text: headline,
-              pretext: YAHOO_URL
-            }
-          ]
-      };
-
-      request({
-        url: WEBHOOK_URL,
-        method: "POST",
-        json: payload
-      }, function(err, res, body) {
-        if (err) {
-          callback(err);
-        }
-        if (res.statusCode != 200) {
-          callback(res);
-        }
-
-        callback(null, headline);
-      });
+      callback(extractHeadline(body), YAHOO_URL);
     }
     else {
-      callback(null, "no missile");
+      lambdaCallback(null, "no missile");
     }
   });
 }
