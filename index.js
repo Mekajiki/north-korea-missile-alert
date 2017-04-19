@@ -8,6 +8,9 @@ var DANGEROUS_WORDS = process.env['DANGEROUS_WORDS'] ?
   process.env['DANGEROUS_WORDS'].split(',') :
   ['北朝鮮', 'ミサイル'];
 
+var UPTODATE_DURATION_MIN = process.env['UPTODATE_DURATION_MIN'] ?
+  parseInt(process.env['UPTODATE_DURATION_MIN']) :
+  3;
 
 var HEADLINE_LENGTH = 20;
 
@@ -55,7 +58,7 @@ function detectMissileByNHK(callback, lambdaCallback) {
     }
 
     var json = JSON.parse(body);
-    var threeMinutesAgo = new Date(Date.now() - 3 * 60 * 1000);
+    var threeMinutesAgo = new Date(Date.now() - UPTODATE_DURATION_MIN * 60 * 1000);
     json.channel.item.find(function (item) {
       var update = Date.parse(item.pubDate);
       var text = item.title;
